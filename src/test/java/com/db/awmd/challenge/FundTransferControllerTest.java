@@ -150,7 +150,8 @@ public class FundTransferControllerTest {
 
         this.mockMvc.perform(post("/v1/fund/transfer").contentType(MediaType.APPLICATION_JSON)
                 .content(validJson))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Debiting Account with accountId Id-456 does not available in system"));
     }
 
     @Test
@@ -159,6 +160,18 @@ public class FundTransferControllerTest {
 
         this.mockMvc.perform(post("/v1/fund/transfer").contentType(MediaType.APPLICATION_JSON)
                 .content(validJson))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Crediting Account with accountId Id-456 does not available in system"));
     }
+
+    @Test
+    public void fundTransferInSameAccount() throws Exception {
+        String validJson = "{\"senderAccountId\":\"Id-123\",\"receiverAccountId\":\"Id-123\",\"fund\":300}";
+
+        this.mockMvc.perform(post("/v1/fund/transfer").contentType(MediaType.APPLICATION_JSON)
+                .content(validJson))
+                .andExpect(status().isNotAcceptable())
+                .andExpect(content().string("Sender and Receiver can't be same"));
+    }
+
 }
