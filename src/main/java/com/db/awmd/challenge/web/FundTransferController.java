@@ -32,8 +32,10 @@ public class FundTransferController {
     public ResponseEntity<Object> fundTransfer(@RequestBody @Valid FundTransfer fundTransfer) {
         log.info("transferring fund {}", fundTransfer);
         try {
+            if (fundTransfer.getSenderAccountId().equalsIgnoreCase(fundTransfer.getReceiverAccountId())) {
+                return new ResponseEntity<>("Sender and Receiver can't be same", HttpStatus.NOT_ACCEPTABLE);
+            }
             this.fundService.fundTransfer(fundTransfer);
-
         } catch (AccountNotFoundException anfe) {
             return new ResponseEntity<>(anfe.getMessage(), HttpStatus.NOT_FOUND);
         } catch (OverDraftNotSuportedException onse) {
